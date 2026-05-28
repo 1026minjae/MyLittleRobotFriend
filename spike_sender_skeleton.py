@@ -1,6 +1,7 @@
 from bt import BT
 import sys
 import time
+import threading
 
 
 class SpikeCommandSender:
@@ -8,9 +9,11 @@ class SpikeCommandSender:
         self.bt = BT()
         self.bt_devices = []
         self.sock = None
+        self.running = False
 
         self.allowed_commands = [
-            "walk",
+            "walk_forward",
+            "walk_backward",
             "left_turn",
             "right_turn",
             "fist_bump",
@@ -19,7 +22,8 @@ class SpikeCommandSender:
             "handshake",
             "raise_right_arm",
             "shake_head",
-            "see_arround"
+            "see_arround",
+            "idle"
         ]
 
     def find_devices(self):
@@ -95,6 +99,63 @@ class SpikeCommandSender:
         except Exception as e:
             print("Failed to send command:", e)
 
+    def start_receiver_thread(self):
+        self.running = True
+
+        receiver_thread = threading.Thread(target=self.receive_loop)
+        receiver_thread.daemon = True
+        receiver_thread.start()
+
+        print("Receiver thread started.")
+        print("Waiting for SPIKE Hub button signals...\n")
+
+    def receive_loop(self):
+        buffer = ""
+
+        while self.running:
+            try:
+                data = self.sock.recv(1024)
+
+                if not data:
+                    continue
+
+                buffer += data.decode("utf-8")
+
+                # SPIKE Hub sends signals with '\n'
+                while "\n" in buffer:
+                    message, buffer = buffer.split("\n", 1)
+                    signal = message.strip()
+
+                    if signal:
+                        self.handle_spike_signal(signal)
+
+            except OSError:
+                # Socket was closed
+                break
+
+            except Exception as e:
+                if self.running:
+                    print("Receive error:", e)
+                break
+
+    def handle_spike_signal(self, signal):
+        print(f"\nReceived from SPIKE Hub: {signal}")
+
+        if signal == "left_button":
+            print("Action: SPIKE Hub left button was pressed.")
+
+        elif signal == "right_button":
+            print("Action: SPIKE Hub right button was pressed.")
+
+        elif signal == "both_buttons":
+            print("Action: Both SPIKE Hub buttons were pressed.")
+            print("SPIKE Hub program may stop.")
+
+        else:
+            print(f"Unknown signal from SPIKE Hub: {signal}")
+
+        print("Command: ", end="", flush=True)
+
     def run_interactive_mode(self):
         print("Interactive command mode started.")
         print("Type one of the following commands:")
@@ -116,10 +177,12 @@ class SpikeCommandSender:
             time.sleep(0.1)
 
     def close(self):
+        self.running = False
+
         if self.sock is not None:
             try:
                 self.sock.close()
-                print("Bluetooth socket closed.")
+                print("\nBluetooth socket closed.")
             except Exception:
                 pass
 
@@ -129,6 +192,11 @@ if __name__ == "__main__":
 
     try:
         sender.connect()
+
+        # Start receiving button signals from SPIKE Hub
+        sender.start_receiver_thread()
+
+        # Continue sending commands to SPIKE Hub
         sender.run_interactive_mode()
 
     except KeyboardInterrupt:
