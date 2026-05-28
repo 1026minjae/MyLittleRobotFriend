@@ -1,0 +1,11 @@
+sudo apt update
+sudo apt install -y python3-pip python3-venv unzip wget portaudio19-dev python3-pyaudio
+
+python3 -m venv venv
+source venv/bin/activate
+
+pip install --upgrade pip
+pip install vosk sounddevice
+
+wget https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
+unzip vosk-model-small-en-us-0.15.zip
