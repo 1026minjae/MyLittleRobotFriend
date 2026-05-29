@@ -199,11 +199,14 @@ def main() -> int:
         min_tracking_confidence=args.min_tracking_confidence,
     )
 
-    cap = cv2.VideoCapture(args.camera)
+    cap = cv2.VideoCapture(args.camera, cv2.CAP_V4L2)
     if not cap.isOpened():
         raise RuntimeError(f"Could not open camera index {args.camera}")
+
+    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, args.width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, args.height)
+    cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
 
     last_printed: Optional[str] = None
     print(f"Loaded model: {model_path}")
