@@ -291,7 +291,7 @@ def main() -> None:
         print_input_devices()
         return
 
-    from inference.infer_rpi import GestureRecognizer
+    from gesture_classification.infer_rpi import GestureRecognizer
     from vosk_stt.recognizer import AudioRecognizer
 
     print(

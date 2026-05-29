@@ -1,0 +1,19 @@
+{
+  "around": "turn_around",
+  "back": "walk_backward",
+  "backward": "walk_backward",
+  "bump": "fist_bump",
+  "dance": "dance",
+  "fist": "fist_bump",
+  "fist_bump": "fist_bump",
+  "forward": "walk_forward",
+  "left": "left_gesture",
+  "look": "look_gesture",
+  "none": "none",
+  "right": "right_gesture",
+  "shake": "shake_gesture",
+  "turn": "turn_around",
+  "turn_around": "turn_around",
+  "walk": "walk_gesture",
+  "wave": "wave_gesture"
+}
