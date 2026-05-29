@@ -7,7 +7,7 @@ Importable usage (from main.py):
     rec.stop()
 
 Standalone demo:
-    python infer_rpi.py --model checkpoints/gesture_recognizer.task
+    python inference/infer_rpi.py
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import cv2
 import mediapipe as mp
 
 
-DEFAULT_MODEL_PATH = "checkpoints/gesture_recognizer.task"
+DEFAULT_MODEL_PATH = str(Path(__file__).resolve().parent / "checkpoints" / "gesture_recognizer.task")
 
 
 def _top_gesture(result) -> tuple[str, float]:

@@ -1,1 +1,8 @@
 My_little_robot_baby.txt
+__pycache__/
+*.py[cod]
+audio_to_action.json
+*.wav
+recordings/
+vosk_stt/vosk-model*/
+vosk_stt/*.zip
